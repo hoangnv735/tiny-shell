@@ -1,4 +1,14 @@
 #include "std.h"
+#include "datetime.h"
+#include "shell.h"
+
+#define SIZE_COMMANDS 12
+const char* COMMANDS[] = {"addpath", "cls", "dir", "exit", "help", 
+                    "kill", "list", "path", "resume", 
+                    "setdate", "settime", "time"};
+enum COMMAND_INDEX {ADDPATH, CLS, DIR, EXIT, HELP,
+                    KILL, LIST, PATH, RESUME,
+                    SETDATE, SETTIME, TIME};
 /*Standardize a string
     recieve a pointer of first character 
     return the same pointer without changing value*/
@@ -63,15 +73,77 @@ void SplitCommand(char* inputString, int* argcPointer, char*** argvPointer){
     int mark = 0;
     spaceCounter = 0;
     for(int i = 0; i < length; i++) {
-        if (inputString[0] == ' ') {
-            *(argvPointer[spaceCounter]) = &(inputString[mark]);
+        if (inputString[i] == ' ') {
+            (*argvPointer)[spaceCounter] = inputString + mark;
+            inputString[i] = '\0';
             mark = i + 1;
             spaceCounter++;
         }
     }
-    *(argvPointer[spaceCounter]) = &(inputString[mark]);
+    (*argvPointer)[spaceCounter] = inputString + mark;
 }
 
 void DeleteCommand(int* argcPointer, char*** argvPointer){
     free(*argvPointer);
+}
+
+int FindCommand(char* command) {
+    int left = 0;
+    int right = SIZE_COMMANDS - 1;
+    int mid;
+    int temp;
+    while (left <= right) {   
+        mid = (left + right) / 2;
+        temp = strcmp(command, COMMANDS[mid]);
+        if (temp == 0) {
+            return mid;
+        }
+        if (temp < 0) {
+            right = mid - 1;
+        } 
+        else {
+            left = mid + 1;
+        }
+    }
+    return -1;
+}
+
+void ExecuteCommand(int argc, char** argv){
+    int commandIndex = FindCommand(argv[0]);
+    if (commandIndex == -1) {
+        printf("\'%s\' is not recognized as an internal or external command, operable program or batch file.\n", argv[0]);
+    }
+    else {
+        switch(commandIndex) {
+            case ADDPATH:
+                break;
+            case CLS:
+                ClearScreen(argc);
+                break;
+            case DIR:
+                break;
+            case EXIT:
+                ExitShell(argc);
+                break;
+            case HELP:
+                break;
+            case KILL:
+                break;
+            case LIST:
+                break;
+            case PATH:
+                break;
+            case RESUME:
+                break;
+            case SETDATE:
+                SetDate(argc, argv);
+                break;
+            case SETTIME:
+                SetTime(argc, argv);
+                break;
+            case TIME:
+                GetTime(argc);
+                break;
+        }
+    }
 }
