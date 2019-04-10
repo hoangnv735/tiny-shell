@@ -2,7 +2,10 @@
 #include "bat.h"
 #include <shlwapi.h>
 #include <string.h>
+#include <stdlib.h>
+
 int main() {
+    system("cls");
     printf("tiny-shell v1.0\n");
     printf("HoangNV, PhucVH, NhungNT \n");
     printf("20182 Dai hoc Bach khoa Ha Noi\n");
@@ -31,7 +34,9 @@ int main() {
             if (PathFileExists(filename)) {
                 ExecuteBatFile(filename);
             }
-            ExecuteCommand(argc, argv);
+            else {
+                ExecuteCommand(argc, argv);
+            }
         }
         DeleteCommand(&argc, &argv);
     }
