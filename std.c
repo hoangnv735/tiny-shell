@@ -1,16 +1,17 @@
 #include "std.h"
 #include "datetime.h"
 #include "shell.h"
+#include "help.h"
 
 #define SIZE_COMMANDS 12
-const char* COMMANDS[] = {"addpath", "cls", "dir", "exit", "help", 
-                    "kill", "list", "path", "resume", 
+const char* COMMANDS[] = {"addpath", "cls", "dir", "exit", "help",
+                    "kill", "list", "path", "resume",
                     "setdate", "settime", "time"};
 enum COMMAND_INDEX {ADDPATH, CLS, DIR, EXIT, HELP,
                     KILL, LIST, PATH, RESUME,
                     SETDATE, SETTIME, TIME};
 /*Standardize a string
-    recieve a pointer of first character 
+    recieve a pointer of first character
     return the same pointer without changing value*/
 char* FormatString(char* string) {
     int i = 0;
@@ -22,7 +23,7 @@ char* FormatString(char* string) {
     if (string[j] == '\0') {
         string[i] = '\0';
         return string;
-    } 
+    }
     string[i] = string[j];
     for(int k = j + 1; k < len; k++) {
         if (string[k] == ' ') {
@@ -30,7 +31,7 @@ char* FormatString(char* string) {
                 i++;
                 string[i] = ' ';
             }
-        } 
+        }
         else {
             i++;
             string[i] = string[k];
@@ -61,7 +62,7 @@ void ReadCommand(char* inputString, int length) {
 
 void SplitCommand(char* inputString, int* argcPointer, char*** argvPointer){
     int spaceCounter = 0;
-    int length = strlen(inputString);    
+    int length = strlen(inputString);
     for(int i = 0; i < length; i++) {
         if (inputString[i] == ' ') {
             spaceCounter++;
@@ -92,7 +93,7 @@ int FindCommand(char* command) {
     int right = SIZE_COMMANDS - 1;
     int mid;
     int temp;
-    while (left <= right) {   
+    while (left <= right) {
         mid = (left + right) / 2;
         temp = strcmp(command, COMMANDS[mid]);
         if (temp == 0) {
@@ -100,7 +101,7 @@ int FindCommand(char* command) {
         }
         if (temp < 0) {
             right = mid - 1;
-        } 
+        }
         else {
             left = mid + 1;
         }
@@ -126,6 +127,7 @@ void ExecuteCommand(int argc, char** argv){
                 ExitShell(argc);
                 break;
             case HELP:
+                HelpShell(argc);
                 break;
             case KILL:
                 break;
