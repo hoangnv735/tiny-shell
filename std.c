@@ -110,8 +110,18 @@ int FindCommand(char* command) {
     return -1;
 }
 
+char* ToLower(char* s) {
+    int length = strlen(s);
+    for (int i = 0; i < length; i++) {
+        if ('A' <= s[i] && s[i] <= 'Z') {
+            s[i] = s[i] + (char)32 ;
+        }
+    }
+    return s;
+}
+
 void ExecuteCommand(int argc, char** argv){
-    int commandIndex = FindCommand(argv[0]);
+    int commandIndex = FindCommand(ToLower(argv[0]));
     if (commandIndex == -1) {
         printf("\'%s\' is not recognized as an internal or external command, operable program or batch file.\n", argv[0]);
     }
