@@ -2,6 +2,7 @@
 #include "datetime.h"
 #include "shell.h"
 #include "help.h"
+#include "path.h"
 
 #define SIZE_COMMANDS 12
 const char* COMMANDS[] = {"addpath", "cls", "dir", "exit", "help",
@@ -117,6 +118,7 @@ void ExecuteCommand(int argc, char** argv){
     else {
         switch(commandIndex) {
             case ADDPATH:
+                AddPath(argc, argv);
                 break;
             case CLS:
                 ClearScreen(argc);
@@ -134,6 +136,7 @@ void ExecuteCommand(int argc, char** argv){
             case LIST:
                 break;
             case PATH:
+                Path();
                 break;
             case RESUME:
                 break;
