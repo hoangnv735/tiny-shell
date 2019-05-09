@@ -11,6 +11,7 @@ void PrintCurrentDirectory();
 void ReadCommand(char* inputString, int length);
 void SplitCommand(char* inputString, int* argcPointer, char*** argvPointer);
 void DeleteCommand(int* argcPointer, char*** argvPointer);
-void ExecuteCommand(int argc, char** argv);
+void ExecuteCommand(int argc, char** argv, char* command);
+
 
 #endif //STD_H

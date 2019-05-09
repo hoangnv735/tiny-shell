@@ -16,8 +16,9 @@ void HelpShell(int argc){
     printf("%-10s  Provides help information for shell commands.\n", "HELP");
     printf("%-10s  Kill a process.\n", "KILL");
     printf("%-10s  List of process.\n", "LIST");
-    printf("%-10s  Displays or sets a search path for executable files.\n", "PATH");
+    printf("%-10s  Displays or sets a search path for executable iles.\n", "PATH");
     printf("%-10s  Resume a process that is stopping.\n", "RESUME");
+    printf("%-10s  Search for a running process.\n", "SEARCH");
     printf("%-10s  Sets the system date dd/mm/yyyy.\n", "SETDATE");
     printf("%-10s  Set the system time hh:mm:ss.\n", "SETTIME");
     printf("%-10s  Displays the system time.\n", "TIME");
