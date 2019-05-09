@@ -46,6 +46,14 @@ char* FormatString(char* string) {
     else {
         string[i + 1] = '\0';
     }
+    int last = strlen(string) - 1;
+    if (string[last] == '\n' || string[last] == '\t') {
+        do {
+            last--;
+        } while (string[last] == '\n' || string[last] == '\t');
+        string[last + 1] = '\0';
+    }
+    
     return string;
 }
 
@@ -58,7 +66,7 @@ void PrintCurrentDirectory() {
 
 void ReadCommand(char* inputString, int length) {
     fflush(stdin);
-    fgets(inputString, length, stdin);
+    fgets(inputString, length+1, stdin);
     //gets(inputString);
     inputString[strlen(inputString) - 1] = '\0';
 }

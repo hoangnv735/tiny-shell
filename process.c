@@ -1,21 +1,23 @@
 #include "process.h"
 #include "macro.h"
 
+// Use in Suspend and Resume process
 typedef LONG (NTAPI * NtSuspendProcess)(IN HANDLE ProcessHandle);
 typedef LONG (NTAPI * NtResumeProcess)(IN HANDLE ProcessHandle);
 
 PROCESS_INFORMATION* piPointer;
 
+// Function to printf errors while working with processes
 void printError() {
-  DWORD eNum;
-  char sysMsg[256];
-  char* p;
-
-  eNum = GetLastError( );
-  FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-         NULL, eNum,
-         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-         sysMsg, 256, NULL );
+    DWORD eNum;
+    char sysMsg[256];
+    char* p;
+    //Get error
+    eNum = GetLastError( );
+    FormatMessage(  FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL, eNum,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                    sysMsg, 256, NULL );
 
   // Trim the end of the line and terminate it with a null
   p = sysMsg;
@@ -28,20 +30,28 @@ void printError() {
   printf("\n  WARNING: Operation failed with error %d (%s)", eNum, sysMsg );
 }
 
+// List process
 void ListProcess(int argc, char** argv) {
     if (argc > 2) {
         _WARNING_MANY_ARG_("list");
     }
-    int searchAllProcess = 0;
+    int searchAllProcess = 0; // 0 = do not list system process
+                            // 1 = list all process
     if (argc == 2) {
+        // search all
         if (!strcmp(argv[1], "all")) {
             searchAllProcess = 1;
         }
+        // invalid command 
         else {
             printf("Invalid argument for \'%s\'. Try \'%s all\'\n", argv[0], argv[0]);
             return;
         }
     }
+
+    /* List process
+        take a napshot (picture) of whole system,
+        use pe32 as a iterator to walk process by process through the snapshot */
     HANDLE hProcess;
     HANDLE hProcessSnap;
     PROCESSENTRY32 pe32;
@@ -49,6 +59,7 @@ void ListProcess(int argc, char** argv) {
     hProcessSnap = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
     if( hProcessSnap == INVALID_HANDLE_VALUE )
     {
+        //Can not take snapshot
         printError();
         return;
     }
@@ -65,28 +76,37 @@ void ListProcess(int argc, char** argv) {
     // Now walk the snapshot of processes, and
     // display information about each process in turn
     if (searchAllProcess == 0) {
+        // Do not list system process
         do {
+            // Try open process
             hProcess = OpenProcess( PROCESS_ALL_ACCESS, FALSE, pe32.th32ProcessID );
             if (hProcess != NULL) {
+                // Not a system process
                 printf( "\nPROCESS NAME:  %s", pe32.szExeFile );
                 printf( "\n  Process ID        = %d", pe32.th32ProcessID );
                 printf( "\n  Thread count      = %d",   pe32.cntThreads );
             }
-        } while( Process32Next( hProcessSnap, &pe32 ) );
+        } while( Process32Next( hProcessSnap, &pe32 ) ); //Go to next process
     }
     else {
+        // List all process, included system process
         do {
             printf( "\nPROCESS NAME:  %s", pe32.szExeFile );
             printf( "\n  Process ID        = %d", pe32.th32ProcessID );
             printf( "\n  Thread count      = %d",   pe32.cntThreads );
-        } while( Process32Next( hProcessSnap, &pe32 ) );
+        } while( Process32Next( hProcessSnap, &pe32 ) ); // Go to next process
     }
-    CloseHandle( hProcessSnap );
+    CloseHandle( hProcessSnap ); // Close snapshot
 }
 
+/*  Search a process by name
+    As ListProcess, this function take a snapshot of the whole system 
+    then walk through to find the fisrt process that have matched name 
+*/
 PROCESS SearchProcessName(char* processName) {
     HANDLE hProcessSnap;
     PROCESSENTRY32 pe32;
+    // Inittialize an empty process
     PROCESS p = {"noname", 0, 0};
     // Take a snapshot of all processes in the system.
     hProcessSnap = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
@@ -109,6 +129,7 @@ PROCESS SearchProcessName(char* processName) {
     // display information about each process in turn
     do {
         if (strcmp(pe32.szExeFile, processName) == 0) {
+            //There is a matched process
             strcpy(p.name, pe32.szExeFile);
             p.processID = pe32.th32ProcessID;
             p.threadCount = pe32.cntThreads;
@@ -117,11 +138,17 @@ PROCESS SearchProcessName(char* processName) {
     } while( Process32Next( hProcessSnap, &pe32 ) );
     CloseHandle( hProcessSnap );
     return p;
+    // If can not find a suitable process return p {"noname", 0, 0}
 }
 
+/*  Search for a process by process ID
+    As ListProcess, this function take a snapshot of the whole system 
+    then walk through to find the fisrt process that have matched name 
+*/
 PROCESS SearchProcessID(int processID) {
     HANDLE hProcessSnap;
     PROCESSENTRY32 pe32;
+    //Initialize anempty process
     PROCESS p = {"noname", 0, 0};
     // Take a snapshot of all processes in the system.
     hProcessSnap = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
@@ -152,8 +179,15 @@ PROCESS SearchProcessID(int processID) {
     } while( Process32Next( hProcessSnap, &pe32 ) );
     CloseHandle( hProcessSnap );
     return p;
+    // If can not find a suitable process return p {"noname", 0, 0}
 }
 
+/* Search for a process in 2 ways:
+    1, by name
+        search "process_name"
+    2. by processID
+        search pid "processID"
+*/
 void SearchProcess(int argc, char** argv) {  
     if (argc > 3) {
         _WARNING_MANY_ARG_("search");
@@ -161,20 +195,25 @@ void SearchProcess(int argc, char** argv) {
     if (argc < 2) {
         _WARNING_FEW_ARG_("search");
     }
+    // Search by name
     if (argc == 2) {
         char* processName = argv[1];
         PROCESS p = SearchProcessName(processName);    
         if (p.threadCount == 0) {
+            // there is no thread means can not find
             printf("Process not found\n");
         }
         else {
+            // Found a process
             printf("\nPROCESS NAME:  %s\n", p.name );
             printf("  Process ID        = %d\n", p.processID );
             printf("  Thread count      = %d\n", p.threadCount );
         }
     }
+    // Search by process ID
     else if (argc ==3) {
         if (!strcmp(argv[1], "pid")) {
+            //second argument is "pid"
             int processID = atoi(argv[2]);
             PROCESS p = SearchProcessID(processID);
             if (p.threadCount == 0) {
@@ -186,6 +225,7 @@ void SearchProcess(int argc, char** argv) {
                 printf("  Thread count      = %d\n", p.threadCount );
             }
         }
+        // invalid command
         else{
             printf("Invalid argument for \'%s\'. Try \'%s pid process_ID\'\n", argv[0], argv[0]);
             return;
@@ -193,6 +233,12 @@ void SearchProcess(int argc, char** argv) {
     }
 }
 
+/*  Kill a process in 2 ways:
+    1. by name
+        kill "process_name"
+    2. ny process ID
+        kill pid "process_ID"
+*/
 void KillProcess(int argc, char** argv) {  
     if (argc < 2) {
         _WARNING_FEW_ARG_("kill");
@@ -203,14 +249,20 @@ void KillProcess(int argc, char** argv) {
     //Kill by name
     if (argc == 2) {
         char* processName = argv[1];
+        // Search for process by mane
         PROCESS p = SearchProcessName(argv[1]);
         if (p.threadCount == 0) {
+            // thread count = 0 means can not find process
             printf("Process not found\n");
             return;
         }
+        // take handle of process
         HANDLE hProcess = OpenProcess( PROCESS_TERMINATE, TRUE, p.processID );
-        if (hProcess == NULL) printError();
+        if (hProcess == NULL) 
+            //Error can not take handle
+            printError();
         else {
+            // terminate process
             printf("Process terminated\n");
             TerminateProcess(hProcess, 0);
             CloseHandle(hProcess);
@@ -219,21 +271,30 @@ void KillProcess(int argc, char** argv) {
     //Kill by process ID
     else if (argc == 3) {
         if (!strcmp(argv[1], "pid")) {
+            // second argument is "pid"
             int processID = atoi(argv[2]);
+            // take handle of process 
             HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, TRUE, processID );
-            if (hProcess == NULL) printError();
+            if (hProcess == NULL) 
+                // error can not find process
+                printError();
             else {
+                // terminate process 
                 printf("Process terminated\n");
                 TerminateProcess(hProcess, 0);
                 CloseHandle(hProcess);
             }
         }
         else {
+            // invalid process           
             printf("Invalid argument for \'%s\'. Try \'%s pid process_ID\'\n", argv[0], argv[0]);
             return;
         }        
     }   
 }
+
+/*  
+*/
 
 void SuspendProcessID(int processID) {
     HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processID);
