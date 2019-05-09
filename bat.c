@@ -12,5 +12,4 @@ int CheckBatFile(char* filename){
 }
 
 void ExecuteBatFile(char* filename) {
-    
 }

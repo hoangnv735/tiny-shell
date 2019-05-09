@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <tchar.h>
-#include "Macro.h"
+#include "macro.h"
 
 void Path();
 void AddPath(int argc, char **argv);

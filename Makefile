@@ -1,25 +1,32 @@
-OBJS = main.o std.o bat.o datetime.o shell.o help.o path.o
-LIB = -lshlwapi
+OBJS = main.o std.o bat.o datetime.o shell.o help.o path.o process.o directory.o
+LIB = -I..\include -lshlwapi -lpsapi
 
 all:  ${OBJS} main run
 .PHONY: run
 
 main.o: main.c
-	gcc -c main.c
+	g++ -c main.c
 bat.o: bat.c bat.h
-	gcc -c bat.c
+	g++ -c bat.c
 std.o: std.c std.h datetime.h
-	gcc -c std.c
-datetime.o: datetime.h
-	gcc -c datetime.c
-shell.o: shell.h
-	gcc -c shell.c
-help.o: help.h
-	gcc -c help.c
-path.o:
-	gcc -c path.c
+	g++ -c std.c
+datetime.o: datetime.c datetime.h
+	g++ -c datetime.c
+shell.o: shell.c shell.h
+	g++ -c shell.c
+help.o: help.c help.h
+	g++ -c help.c
+path.o: path.c path.h
+	g++ -c path.c
+process.o: process.c process.h
+	g++ -c process.c
+directory.o: directory.c directory.h
+	g++ -c directory.c
 
 main: ${OBJS}
-	gcc -o tiny-shell ${OBJS} ${LIB}
+	g++ -o tiny-shell ${OBJS} ${LIB}
 run:
 	.\tiny-shell
+
+clean:
+	del *.o

@@ -11,6 +11,7 @@ int main() {
     printf("20182 Dai hoc Bach khoa Ha Noi\n");
     
     char inputString[MAX_PATH];
+    char command[MAX_PATH];
 
     while (1) {
         int argc = 0;
@@ -22,6 +23,7 @@ int main() {
         if (inputString[0] == '\0') {
             continue;
         }
+        strcpy(command, inputString);
         SplitCommand(inputString, &argc, &argv);
         if (CheckBatFile(argv[0])) {
             ExecuteBatFile(argv[0]);
@@ -35,7 +37,7 @@ int main() {
                 ExecuteBatFile(filename);
             }
             else {
-                ExecuteCommand(argc, argv);
+                ExecuteCommand(argc, argv, command);
             }
         }
         DeleteCommand(&argc, &argv);

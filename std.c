@@ -3,14 +3,16 @@
 #include "shell.h"
 #include "help.h"
 #include "path.h"
+#include "process.h"
+#include "directory.h"
 
-#define SIZE_COMMANDS 12
+#define SIZE_COMMANDS 14
 const char* COMMANDS[] = {"addpath", "cls", "dir", "exit", "help",
-                    "kill", "list", "path", "resume",
-                    "setdate", "settime", "time"};
+                    "kill", "list", "path", "resume", "search",
+                    "setdate", "settime", "stop", "time"};
 enum COMMAND_INDEX {ADDPATH, CLS, DIR, EXIT, HELP,
-                    KILL, LIST, PATH, RESUME,
-                    SETDATE, SETTIME, TIME};
+                    KILL, LIST, PATH, RESUME, SEARCH,
+                    SETDATE, SETTIME, STOP, TIME};
 /*Standardize a string
     recieve a pointer of first character
     return the same pointer without changing value*/
@@ -120,10 +122,18 @@ char* ToLower(char* s) {
     return s;
 }
 
-void ExecuteCommand(int argc, char** argv){
-    int commandIndex = FindCommand(ToLower(argv[0]));
+void ExecuteCommand(int argc, char** argv, char* command){
+    char temp[512];
+    strcpy(temp, argv[0]);
+    int commandIndex = FindCommand(ToLower(temp));
     if (commandIndex == -1) {
-        printf("\'%s\' is not recognized as an internal or external command, operable program or batch file.\n", argv[0]);
+        if (!strcmp(argv[argc - 1], "&")) {
+            command[strlen(command) - 2] = '\0';
+            CreateProcessForeground(argc, argv, command);
+        }
+        else {            
+            CreateProcessBackground(argc, argv, command);
+        }
     }
     else {
         switch(commandIndex) {
@@ -134,6 +144,7 @@ void ExecuteCommand(int argc, char** argv){
                 ClearScreen(argc);
                 break;
             case DIR:
+                DirectoryCommand(argc, argv);
                 break;
             case EXIT:
                 ExitShell(argc);
@@ -142,19 +153,28 @@ void ExecuteCommand(int argc, char** argv){
                 HelpShell(argc);
                 break;
             case KILL:
+                KillProcess(argc, argv);
                 break;
             case LIST:
+                ListProcess(argc, argv);
                 break;
             case PATH:
                 Path();
                 break;
             case RESUME:
+                ResumeProcess(argc, argv);
+                break;
+            case SEARCH:
+                SearchProcess(argc, argv);
                 break;
             case SETDATE:
                 SetDate(argc, argv);
                 break;
             case SETTIME:
                 SetTime(argc, argv);
+                break;
+            case STOP:
+                StopProcess(argc, argv);
                 break;
             case TIME:
                 GetTime(argc);
