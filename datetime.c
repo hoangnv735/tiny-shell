@@ -109,7 +109,7 @@ void SetTime(int argc, char** argv)
 	int len = strlen(argv[argc - 1]);
 	char *str = (char*) malloc ((len + 2) * sizeof(char));
 	strcpy(str, argv[argc - 1]);
-	str[len] = '/';
+	str[len] = ':';
 	str[len + 1] = '\0';
 	
 	while(str[i] != '\0')
