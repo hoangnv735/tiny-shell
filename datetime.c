@@ -122,19 +122,19 @@ void SetTime(int argc, char** argv)
 		else if(str[i] = ':')
 		{
 			timeCount++;
-			if(timeCount == 1 && timeTemp <= 24)
+			if(timeCount == 1 && timeTemp <= 23)
 			{
 				if(numberOfDigit > 2 || numberOfDigit < 1)
 					_TERMINATE_
 				time.wHour = timeTemp;
 			}
-			else if(timeCount == 2 && timeTemp <= 60)
+			else if(timeCount == 2 && timeTemp <= 59)
 			{
 				if(numberOfDigit > 2 || numberOfDigit < 1)
 					_TERMINATE_
 				time.wMinute = timeTemp;
 			}
-			else if(timeCount == 3 && timeTemp <= 60)
+			else if(timeCount == 3 && timeTemp <= 59)
 			{
 				if(numberOfDigit > 2 || numberOfDigit < 1)
 					_TERMINATE_
