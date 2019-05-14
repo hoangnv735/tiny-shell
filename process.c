@@ -141,6 +141,43 @@ PROCESS SearchProcessName(char* processName) {
     // If can not find a suitable process return p {"noname", 0, 0}
 }
 
+BOOL SearchAllProcessName(char* processName) {
+    HANDLE hProcessSnap;
+    PROCESSENTRY32 pe32;
+    BOOL found = FALSE;
+    // Take a snapshot of all processes in the system.
+    hProcessSnap = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
+    if( hProcessSnap == INVALID_HANDLE_VALUE )
+    {
+        printError();
+        return found;
+    }
+    // Set the size of the structure before using it.
+    pe32.dwSize = sizeof( PROCESSENTRY32 );
+    // Retrieve information about the first process,
+    // and exit if unsuccessful
+    if( !Process32First( hProcessSnap, &pe32 ) )
+    {
+        printError(); // show cause of failure
+        CloseHandle( hProcessSnap );          // clean the snapshot object
+        return found;
+    }
+    // Now walk the snapshot of processes, and
+    // display information about each process in turn
+    do {
+        if (strcmp(pe32.szExeFile, processName) == 0) {
+            //There is a matched process
+            printf( "\nPROCESS NAME:  %s", pe32.szExeFile );
+            printf( "\n  Process ID        = %d", pe32.th32ProcessID );
+            printf( "\n  Thread count      = %d",   pe32.cntThreads );
+            found = TRUE;
+        }
+    } while( Process32Next( hProcessSnap, &pe32 ) );
+    CloseHandle( hProcessSnap );
+    return found;
+    // If can not find a suitable process return p {"noname", 0, 0}
+}
+
 /*  Search for a process by process ID
     As ListProcess, this function take a snapshot of the whole system 
     then walk through to find the fisrt process that have matched name 
@@ -198,16 +235,10 @@ void SearchProcess(int argc, char** argv) {
     // Search by name
     if (argc == 2) {
         char* processName = argv[1];
-        PROCESS p = SearchProcessName(processName);    
-        if (p.threadCount == 0) {
+        BOOL found = SearchAllProcessName(processName);    
+        if (found == 0) {
             // there is no thread means can not find
             printf("Process not found\n");
-        }
-        else {
-            // Found a process
-            printf("\nPROCESS NAME:  %s\n", p.name );
-            printf("  Process ID        = %d\n", p.processID );
-            printf("  Thread count      = %d\n", p.threadCount );
         }
     }
     // Search by process ID

@@ -8,10 +8,10 @@ void Path(int argc)
 {
 	/*Dua ra cac bien moi truong cua tien trinh hien tai
 	  su dung ham WINAPI GetEnvironmentStrings*/
-	if(argc <= 1)
-		_WARNING_FEW_ARG_("addpath")
-	if(argc > 2)
-		_WARNING_MANY_ARG_("addpath")
+	if(argc < 1)
+		_WARNING_FEW_ARG_("path")
+	if(argc >= 2)
+		_WARNING_MANY_ARG_("path")
 	LPTCH lpEnvVar;
 	lpEnvVar = GetEnvironmentStrings();
 	if(lpEnvVar == NULL)
@@ -36,7 +36,7 @@ void AddPath(int argc, char **argv)
 	if(argc > 3)
 		_WARNING_MANY_ARG_("addpath")
 	if(SetEnvironmentVariable(argv[1], argv[2]))
-		Path();
+		Path(1);
 	else
 		printf("SetEnvironmentVariable failed (%lu)\n", GetLastError());
 }

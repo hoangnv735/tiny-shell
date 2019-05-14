@@ -167,7 +167,7 @@ void ExecuteCommand(int argc, char** argv, char* command){
                 ListProcess(argc, argv);
                 break;
             case PATH:
-                Path();
+                Path(argc);
                 break;
             case RESUME:
                 ResumeProcess(argc, argv);
