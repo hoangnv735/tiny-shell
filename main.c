@@ -8,7 +8,7 @@
 int main() {
     system("cls");
     printf("tiny-shell v1.0\n");
-    printf("HoangNV, PhucVH, NhungNT \n");
+    printf("HoangNV, PhucVH\n");
     printf("20182 Dai hoc Bach khoa Ha Noi\n");
     
     char inputString[MAX_PATH];
