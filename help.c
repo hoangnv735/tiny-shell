@@ -21,5 +21,6 @@ void HelpShell(int argc){
     printf("%-10s  Search for a running process.\n", "SEARCH");
     printf("%-10s  Sets the system date dd/mm/yyyy.\n", "SETDATE");
     printf("%-10s  Set the system time hh:mm:ss.\n", "SETTIME");
+    printf("%-10s  Stop a process that is running.\n", "STOP");
     printf("%-10s  Displays the system time.\n", "TIME");
 }
