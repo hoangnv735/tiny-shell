@@ -4,10 +4,14 @@
 #include "Macro.h"
 #include "Path.h"
 
-void Path()
+void Path(int argc)
 {
 	/*Dua ra cac bien moi truong cua tien trinh hien tai
 	  su dung ham WINAPI GetEnvironmentStrings*/
+	if(argc <= 1)
+		_WARNING_FEW_ARG_("addpath")
+	if(argc > 2)
+		_WARNING_MANY_ARG_("addpath")
 	LPTCH lpEnvVar;
 	lpEnvVar = GetEnvironmentStrings();
 	if(lpEnvVar == NULL)

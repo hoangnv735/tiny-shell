@@ -6,7 +6,7 @@
 #include <tchar.h>
 #include "macro.h"
 
-void Path();
+void Path(int argc);
 void AddPath(int argc, char **argv);
 
 #endif
