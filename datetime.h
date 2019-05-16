@@ -12,10 +12,9 @@
 #define _CHECK_LEAP_YEAR_(day, month, year)												   \
 	(((!(year % 4 == 0 && year % 100 != 0) || year % 400 == 0)) && month == 2 && day >= 29)\
 	|| (((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) && month == 2 && day >= 30)
-#define _TERMINATE_ \
-{                   \
-    flag = 0;       \
-    break;          \
+#define _TERMINATE_ {\
+    flag = 0;        \
+    break;           \
 }
 
 void GetTime(int argc);

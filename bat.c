@@ -2,6 +2,7 @@
 #include "std.h"
 #include "run.h"
 
+// check 4 last character, is that ".bat"
 int CheckBatFile(char* filename){
     int length = strlen(filename); 
     if (length > 4 &&
@@ -14,6 +15,7 @@ int CheckBatFile(char* filename){
     return 0;
 }
 
+// Execute Bat File
 void ExecuteBatFile(char* filename) {
     FILE * f = fopen(filename, "r");
     if (!f) {
@@ -23,6 +25,7 @@ void ExecuteBatFile(char* filename) {
     printf("Executing %s\n", filename);
     char inputString[MAX_PATH];
     fflush(stdin);
+    // read bat file line by line, then execute command
     while (fgets(inputString, MAX_PATH + 1, f)) {
         //inputString[strlen(inputString) - 1] = '\0';
         fflush(stdin);

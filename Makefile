@@ -1,3 +1,4 @@
+# Minggw
 OBJS = main.o std.o bat.o datetime.o shell.o help.o path.o process.o directory.o run.o
 LIB = -I..\include -lshlwapi -lpsapi
 

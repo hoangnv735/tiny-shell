@@ -4,33 +4,29 @@
 #include "Macro.h"
 #include "Path.h"
 
-void Path(int argc)
-{
-	/*Dua ra cac bien moi truong cua tien trinh hien tai
-	  su dung ham WINAPI GetEnvironmentStrings*/
+// List all environment variables
+void Path(int argc) {
 	if(argc < 1)
 		_WARNING_FEW_ARG_("path")
 	if(argc >= 2)
 		_WARNING_MANY_ARG_("path")
 	LPTCH lpEnvVar;
+	// Get environment 
 	lpEnvVar = GetEnvironmentStrings();
-	if(lpEnvVar == NULL)
-    {
+	if(lpEnvVar == NULL) {
         printf("Cannot find the pointer to the environment block of the current process");
         return;
     }
-    while(*lpEnvVar)
-    {
-    	_tprintf(_T("%s \n"), lpEnvVar);
+    while(*lpEnvVar) {
+    	printf("%s \n", lpEnvVar);
     	lpEnvVar += lstrlen(lpEnvVar) + 1;
     }
     FreeEnvironmentStrings(lpEnvVar);
 }
 
+// Add environent variable
 void AddPath(int argc, char **argv)
 {
-	/*Them 1 bien moi truong
-	  tham so dau vao gom ten bien moi truong va noi dung*/
 	if(argc <= 2)
 		_WARNING_FEW_ARG_("addpath")
 	if(argc > 3)
